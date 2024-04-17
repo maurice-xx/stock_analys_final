@@ -1,0 +1,147 @@
+AJAXA{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日股市</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <style>
+        body {
+
+            color: #fff;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-image: url("{% static 'photo/background.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh; /* 设置最小高度为视口高度 */
+        }
+
+        .stock-table {
+            background: #1e1e1e;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .stock-table th, .stock-table td {
+            text-align: center;
+        }
+
+        .up {
+            color: #4CAF50;
+        }
+
+        .down {
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">股票大数据分析</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/index">首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">股票新闻</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/overtime">股市变化</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/plot">股票分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/forecast">股票预测</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/save">数据下载</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/feedback">意见反馈</a>
+                </li>
+            </ul>
+            <!-- 右侧的用户信息和注销按钮 -->
+            <ul class="navbar-nav ms-auto">
+                {% if username %}
+                    <li class="nav-item">
+                        <a class="nav-link">欢迎, {{ username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'modify_user' %}" class="nav-link">修改个人信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout_user' %}" class="nav-link">注销</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'user_login' %}" class="nav-link">登录</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1 class="text-center">昨日股市变化</h1>
+    <table class="table table-dark stock-table">
+        <thead>
+        <tr>
+            <th>名称/价格</th>
+            <th>+ / -</th>
+            <th>%</th>
+            <th>日期</th>
+        </tr>
+        </thead>
+        <tbody id="stock-data">
+        <!-- 股票数据行将通过 JavaScript 动态填充 -->
+        </tbody>
+    </table>
+</div>
+
+<!-- jQuery (Bootstrap 的依赖) -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- AJAX 请求股市数据 -->
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '{% url 'overtime' %}', // Django 视图函数的 URL
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                const stockDataBody = $('#stock-data');
+                $.each(data, function (i, stock) {
+                    const rowClass = stock.change >= 0 ? 'up' : 'down';
+                    stockDataBody.append(
+                        `<tr class="${rowClass}">
+                                <td>${stock.name}/${stock.price}</td>
+                                <td>${stock.change}</td>
+                                <td>${stock.changePercent}</td>
+                                <td>${stock.date}</td>
+                            </tr>`
+                    );
+                });
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+</script>
+</body>
+</html>

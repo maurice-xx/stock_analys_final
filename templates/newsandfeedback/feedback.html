@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提交反馈</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>提交反馈</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- 反馈内容 -->
+        <div class="mb-3">
+            <label for="content" class="form-label">反馈内容:</label>
+            <textarea name="content" id="content" class="form-control" required></textarea>
+        </div>
+        <!-- 联系方式 -->
+        <div class="mb-3">
+            <label for="contact" class="form-label">联系方式:</label>
+            <input type="text" name="contact" id="contact" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">提交</button>
+    </form>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

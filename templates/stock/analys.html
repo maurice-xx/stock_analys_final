@@ -1,0 +1,274 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票数据分析</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url("{% static 'photo/background.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">股票大数据分析</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/index">首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">股票新闻</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/overtime">股市变化</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/plot">股票分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/forecast">股票预测</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/save">数据下载</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/feedback">意见反馈</a>
+                </li>
+            </ul>
+            <!-- 右侧的用户信息和注销按钮 -->
+            <ul class="navbar-nav ms-auto">
+                {% if username %}
+                    <li class="nav-item">
+                        <a class="nav-link">欢迎, {{ username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'modify_user' %}" class="nav-link">修改个人信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout_user' %}" class="nav-link">注销</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'user_login' %}" class="nav-link">登录</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 class="text-center mt-5">股票分析图</h1>
+    <div class="row justify-content-center mt-3">
+        <div class="col-lg-6 col-md-8">
+            <form method="GET" action="/plot">
+                <div class="mb-3">
+                    <label for="company" class="form-label">选择公司：</label>
+                    <select id="company" name="company" class="form-select">
+                        <option value="AAPL" {% if selected_company == 'AAPL' %}selected{% endif %}>苹果公司 (AAPL)
+                        </option>
+                        <option value="GOOGL" {% if selected_company == 'GOOGL' %}selected{% endif %}>谷歌母公司
+                            Alphabet (GOOGL)
+                        </option>
+                        <option value="MSFT" {% if selected_company == 'MSFT' %}selected{% endif %}>微软公司 (MSFT)
+                        </option>
+                        <option value="AMZN" {% if selected_company == 'AMZN' %}selected{% endif %}>亚马逊公司 (AMZN)
+                        </option>
+                        <option value="FB" {% if selected_company == 'FB' %}selected{% endif %}>Facebook (FB)</option>
+                        <option value="TSLA" {% if selected_company == 'TSLA' %}selected{% endif %}>特斯拉 (TSLA)
+                        </option>
+                        <option value="NFLX" {% if selected_company == 'NFLX' %}selected{% endif %}>Netflix (NFLX)
+                        </option>
+                        <option value="NVDA" {% if selected_company == 'NVDA' %}selected{% endif %}>NVIDIA (NVDA)
+                        </option>
+                        <option value="BABA" {% if selected_company == 'BABA' %}selected{% endif %}>阿里巴巴 (BABA)
+                        </option>
+                        <!-- 添加更多公司选项 -->
+                    </select>
+                </div>
+                <div class="row mb-3">
+                    <label for="start_date" class="form-label col-sm-2">开始日期：</label>
+                    <div class="col-sm-10">
+                        <select id="start_year" name="start_year" class="form-select">
+                            {% for year in years %}
+                                <option value="{{ year }}"
+                                        {% if year == request.GET.start_year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="start_month" name="start_month" class="form-select">
+                            {% for month in months %}
+                                <option value="{{ month }}"
+                                        {% if month == request.GET.start_month %}selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="start_day" name="start_day" class="form-select">
+                            {% for day in days %}
+                                <option value="{{ day }}"
+                                        {% if day == request.GET.start_day %}selected{% endif %}>{{ day }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="end_date" class="form-label col-sm-2">结束日期：</label>
+                    <div class="col-sm-10">
+                        <select id="end_year" name="end_year" class="form-select">
+                            {% for year in years %}
+                                <option value="{{ year }}"
+                                        {% if year == request.GET.end_year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="end_month" name="end_month" class="form-select">
+                            {% for month in months %}
+                                <option value="{{ month }}"
+                                        {% if month == request.GET.end_month %}selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="end_day" name="end_day" class="form-select">
+                            {% for day in days %}
+                                <option value="{{ day }}"
+                                        {% if day == request.GET.end_day %}selected{% endif %}>{{ day }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">查询</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-8 text-center">
+        {% if image_base64_1 %}
+            <div class="card">
+                <img src="data:image/png;base64,{{ image_base64_1 }}" class="card-img-top" alt="Stock Analysis">
+                <div class="card-body">
+                    <h5 class="card-title">股票收盘价随时间变化图</h5>
+                </div>
+            </div>
+        {% endif %}
+        {% if image_base64_2 %}
+            <div class="card">
+                <img src="data:image/png;base64,{{ image_base64_2 }}" class="card-img-top" alt="Stock Analysis">
+                <div class="card-body">
+                    <h5 class="card-title">收益率分布直方图</h5>
+                </div>
+            </div>
+        {% endif %}
+        {% if image_base64_3 %}
+            <div class="card">
+                <img src="data:image/png;base64,{{ image_base64_3 }}" class="card-img-top" alt="Stock Analysis">
+                <div class="card-body">
+                    <h5 class="card-title">收盘价及移动平均线</h5>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if image_base64_4 %}
+            <div class="card">
+                <img src="data:image/png;base64,{{ image_base64_4 }}" class="card-img-top" alt="Stock Analysis">
+                <div class="card-body">
+                    <h5 class="card-title">K线图与成交量</h5>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 引入 Bootstrap JS -->
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<!-- 初始化选择框 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDateSelects = {
+            year: document.getElementById('start_year'),
+            month: document.getElementById('start_month'),
+            day: document.getElementById('start_day')
+        };
+        const endDateSelects = {
+            year: document.getElementById('end_year'),
+            month: document.getElementById('end_month'),
+            day: document.getElementById('end_day')
+        };
+
+        const currentDate = new Date();
+
+        // 定义 daysInMonth 函数
+        function daysInMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        // 动态生成年份选项
+        startDateSelects.year.innerHTML = '';
+        endDateSelects.year.innerHTML = '';
+        for (let i = currentDate.getFullYear() - 10; i <= currentDate.getFullYear(); i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.text = i;
+            startDateSelects.year.appendChild(option);
+            endDateSelects.year.appendChild(option.cloneNode(true));
+        }
+
+        // 动态生成月份选项
+        startDateSelects.month.innerHTML = '';
+        endDateSelects.month.innerHTML = '';
+        for (let i = 1; i <= 12; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.text = i < 10 ? '0' + i : i.toString();
+            startDateSelects.month.appendChild(option);
+            endDateSelects.month.appendChild(option.cloneNode(true));
+        }
+
+        // 更新日期选项的函数
+        const updateDays = (selects) => {
+            const year = parseInt(selects.year.value);
+            const month = parseInt(selects.month.value);
+            selects.day.innerHTML = '';
+            const days = daysInMonth(year, month);
+            for (let i = 1; i <= days; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = i < 10 ? '0' + i : i.toString();
+                selects.day.appendChild(option);
+            }
+        };
+
+        // 添加事件监听器
+        startDateSelects.year.addEventListener('change', () => updateDays(startDateSelects));
+        startDateSelects.month.addEventListener('change', () => updateDays(startDateSelects));
+        endDateSelects.year.addEventListener('change', () => updateDays(endDateSelects));
+        endDateSelects.month.addEventListener('change', () => updateDays(endDateSelects));
+
+        // 设置默认值或当前值
+        startDateSelects.year.value = '{{ request.GET.start_year }}' || (currentDate.getFullYear() - 2).toString();
+        startDateSelects.month.value = '{{ request.GET.start_month }}' || (currentDate.getMonth() + 1).toString();
+        endDateSelects.year.value = '{{ request.GET.end_year }}' || currentDate.getFullYear().toString();
+        endDateSelects.month.value = '{{ request.GET.end_month }}' || (currentDate.getMonth() + 1).toString();
+
+        // 初始化日期选择器
+        updateDays(startDateSelects);
+        updateDays(endDateSelects);
+        startDateSelects.day.value = '{{ request.GET.start_day }}' || currentDate.getDate().toString();
+        endDateSelects.day.value = '{{ request.GET.end_day }}' || currentDate.getDate().toString();
+    });
+</script>
+
+</body>
+</html>

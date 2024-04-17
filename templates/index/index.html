@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票大数据分析系统</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        body {
+            /* 覆盖整个页面的背景设置 */
+            background-image: url("{% static 'photo/background.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh; /* 设置最小高度为视口高度 */
+        }
+
+        /* 调整轮播图容器的宽度 */
+        #carouselExampleIndicators {
+            width: 90%; /* 宽度80% */
+            margin: auto; /* 保持居中显示 */
+        }
+
+        .carousel-inner img {
+            width: 100%; /* 图片宽度自适应容器宽度 */
+            max-height: 450px; /* 设置图片的最大高度 */
+            object-fit: cover; /* 确保图片覆盖整个元素框，而不变形 */
+        }
+
+
+    </style>
+    {% if messages %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                {% for message in messages %}
+                    // 检查是否有任何错误消息
+                    if ("{{ message.tags }}" === "error") {
+                        alert("{{ message }}");
+                    } else if ("{{ message.tags }}" === "success") {
+                        alert("{{ message }}");
+                    }
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">股票大数据分析</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/index">首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">股票新闻</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/overtime">股市变化</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/plot">股票分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/forecast">股票预测</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/save">数据下载</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/feedback">意见反馈</a>
+                </li>
+            </ul>
+            <!-- 右侧的用户信息和注销按钮 -->
+            <ul class="navbar-nav ms-auto">
+                {% if username %}
+                    <li class="nav-item">
+                        <a class="nav-link">欢迎, {{ username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'modify_user' %}" class="nav-link">修改个人信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout_user' %}" class="nav-link">注销</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'user_login' %}" class="nav-link">登录</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 轮播图 -->
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+    <!-- 在此处添加轮播图内容 -->
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'photo/image1.jpg' %}" class="d-block w-100" alt="Stock Market Display">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'photo/image2.jpg' %}" class="d-block w-100" alt="Financial Graph">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'photo/image3.jpg' %}" class="d-block w-100" alt="Trading Desk">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'photo/image4.jpg' %}" class="d-block w-100" alt="Trading Desk">
+            </div>
+
+            <!-- 更多轮播项 -->
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </a>
+    </div>
+</div>
+
+<!-- 介绍区域 -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6">
+            <h2 class="mb-3">欢迎来到股票大数据分析系统</h2>
+            <p class="lead">我们提供先进的数据分析工具，帮助您洞察股市趋势。</p>
+            <p>
+                本系统利用大数据和机器学习技术，为用户提供实时的股票市场分析、预测和个性化投资建议。无论您是经验丰富的投资者还是初学者，我们的系统都能帮助您做出明智的投资决策。</p>
+        </div>
+        <div class="col-lg-6">
+            <!-- 可以添加一张代表性的图片或图表 -->
+            <img src="{% static 'photo/image5.jpg' %}" class="img-fluid" alt="介绍图">
+        </div>
+    </div>
+</div>
+<!-- 特色服务区域 -->
+<div class="container my-5">
+    <h2 class="text-center mb-4">我们的特色服务</h2>
+    <div class="row">
+        <!-- 股票热点新闻卡片 -->
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{% static 'photo/image1.jpg' %}" class="card-img-top" alt="实时数据分析">
+                <div class="card-body">
+                    <h5 class="card-title">股市今日焦点</h5>
+                    <p class="card-text">这里是关于股市最新热点新闻的简要描述，可能包括市场趋势、重大交易或财经事件等。</p>
+                </div>
+            </div>
+        </div>
+        <!-- 实时数据分析 -->
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{% static 'photo/image2.jpg' %}" class="card-img-top" alt="实时数据分析">
+                <div class="card-body">
+                    <h5 class="card-title">实时数据分析</h5>
+                    <p class="card-text">利用最新技术，为您提供股市的实时数据分析，帮助您及时把握市场动态。</p>
+                </div>
+            </div>
+        </div>
+        <!-- 历史趋势评估 -->
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{% static 'photo/image3.jpg' %}" class="card-img-top" alt="历史趋势评估">
+                <div class="card-body">
+                    <h5 class="card-title">历史趋势评估</h5>
+                    <p class="card-text">通过深入分析历史数据，预测未来趋势，为您的投资决策提供科学依据。</p>
+                </div>
+            </div>
+        </div>
+        <!-- 其他服务 -->
+        <!-- 更多卡片... -->
+    </div>
+</div>
+
+<!-- 联系信息和社交媒体链接 -->
+<div class="container my-5">
+    <h2 class="text-center mb-4">联系我们</h2>
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <h5>QQ</h5>
+            <p><a href="tencent://message/?uin=1609296833&Site=qq&Menu=yes">添加QQ好友</a></p>
+        </div>
+        <div class="col-md-4 text-center">
+            <h5>微信号</h5>
+            <p>MAURICE</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <h5>哔哩哔哩</h5>
+            <p><a href="https://space.bilibili.com/455738593" target="_blank">哔哩哔哩个人页面</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- 引入 Bootstrap JS -->
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

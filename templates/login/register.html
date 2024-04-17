@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <!-- 引入 Bootstrap CSS -->
+    <style>
+        body {
+            /* 覆盖整个页面的背景设置 */
+            background-image: url("{% static 'photo/background.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh; /* 设置最小高度为视口高度 */
+        }
+    </style>
+    {% if messages %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                {% for message in messages %}
+                    // 检查是否有任何错误消息
+                    if ("{{ message.tags }}" === "error") {
+                        alert("{{ message }}");
+                    } else if ("{{ message.tags }}" === "success") {
+                        alert("{{ message }}");
+                    }
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>注册新用户</h2>
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="username">用户名:</label>
+            <input type="text" name="username" id="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="email">电子邮件:</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password">密码:</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">注册</button>
+    </form>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

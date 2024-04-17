@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <!-- 引入 Bootstrap CSS -->
+    <style>
+        body {
+            /* 覆盖整个页面的背景设置 */
+            background-image: url("{% static 'photo/background.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh; /* 设置最小高度为视口高度 */
+        }
+    </style>
+    {% if messages %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                {% for message in messages %}
+                    // 检查是否有任何错误消息
+                    if ("{{ message.tags }}" === "error") {
+                        alert("{{ message }}");
+                    } else if ("{{ message.tags }}" === "success") {
+                        alert("{{ message }}");
+                    }
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card" style="width: 400px;">
+        <div class="card-body">
+            <h4 class="card-title text-center mb-4">登录</h4>
+            <form method="post" action="{% url 'user_login' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名:</label>
+                    <input type="text" name="username" id="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码:</label>
+                    <input type="password" name="password" id="password" class="form-control" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="is_admin" id="is_admin" class="form-check-input">
+                    <label for="is_admin" class="form-check-label">管理员登录</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">登录</button>
+            </form>
+            <div class="text-center mt-3">
+                <p>还没有账户？<a href="{% url 'register' %}">注册新用户</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
