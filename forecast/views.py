@@ -43,7 +43,7 @@ def replace_outliers(df, window_size=20, z_score_threshold=2):
 
 
 # 生成训练集
-def create_dataset(df, history_size=360, prediction_size=1):
+def create_dataset(df, history_size=20, prediction_size=1):
     close_prices = df['close'].values
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_data = scaler.fit_transform(close_prices.reshape(-1, 1))
